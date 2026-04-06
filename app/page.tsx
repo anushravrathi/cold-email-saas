@@ -1,44 +1,26 @@
 "use client";
 
 import { signIn, signOut, useSession } from "next-auth/react";
-import { useState } from "react";
 
 export default function Home() {
   const { data: session } = useSession();
 
-  
+  const sendEmail = async () => {
+    console.log("SESSION:", session);
 
-const [loading, setLoading] = useState(false);
-
-const sendEmail = async () => {
-  if (loading) return;
-
-  setLoading(true);
-
-  await fetch("/api/send", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      accessToken: session?.accessToken,
-      contacts: [
-        {
-          name: "Rahul",
-          email: "your_email@gmail.com",
-          company: "Google",
-        },
-        {
-          name: "Priya",
-          email: "your_email@gmail.com",
-          company: "Amazon",
-        },
-      ],
-    }),
-  });
-
-  setLoading(false);
-};
+    await fetch("/api/send", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        accessToken: session?.accessToken,
+        to: "YOUR_OTHER_EMAIL@gmail.com", // ⚠️ use DIFFERENT email
+        name: "Rahul",
+        company: "Google",
+      }),
+    });
+  };
 
   if (!session) {
     return (
@@ -55,17 +37,14 @@ const sendEmail = async () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-      <p className="text-lg font-semibold">
-        Welcome {session.user?.name}
-      </p>
+      <p>Welcome {session.user?.name}</p>
 
       <button
-  onClick={sendEmail}
-  disabled={loading}
-  className="bg-green-600 text-white px-6 py-2 rounded"
->
-  {loading ? "Sending..." : "Send Emails 🚀"}
-</button>
+        onClick={sendEmail}
+        className="bg-green-600 text-white px-6 py-2 rounded"
+      >
+        Send Test Email 🚀
+      </button>
 
       <button
         onClick={() => signOut()}

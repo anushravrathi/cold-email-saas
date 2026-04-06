@@ -11,7 +11,10 @@ export default function UploadPage() {
   const { data: session } = useSession();
 
   const handleUpload = async () => {
-    if (!file) return;
+    if (!file) {
+      alert("Upload CSV first");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("file", file);
@@ -26,7 +29,15 @@ export default function UploadPage() {
   };
 
   const sendEmails = async () => {
-    if (!session?.accessToken) return;
+    if (!session?.accessToken) {
+      alert("Login required");
+      return;
+    }
+
+    if (data.length === 0) {
+      alert("Upload CSV first");
+      return;
+    }
 
     setLoading(true);
 
@@ -62,7 +73,6 @@ export default function UploadPage() {
         Upload CSV
       </button>
 
-      {/* Preview */}
       <div className="mb-6">
         {data.map((row, i) => (
           <div key={i} className="text-sm">
@@ -71,16 +81,13 @@ export default function UploadPage() {
         ))}
       </div>
 
-      {/* Send Emails */}
-      {data.length > 0 && (
-        <button
-          onClick={sendEmails}
-          disabled={loading}
-          className="bg-green-600 text-white px-6 py-2 rounded"
-        >
-          {loading ? "Sending..." : "Send Emails 🚀"}
-        </button>
-      )}
+      <button
+        onClick={sendEmails}
+        disabled={loading || data.length === 0}
+        className="bg-green-600 text-white px-6 py-2 rounded disabled:opacity-50"
+      >
+        {loading ? "Sending..." : "Send Emails 🚀"}
+      </button>
     </div>
   );
 }
